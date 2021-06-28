@@ -14,6 +14,8 @@ declare global {
       require(name: "Migrations"): TruffleContracts.MigrationsContract;
       require(name: "Ownable"): TruffleContracts.OwnableContract;
       require(name: "PathToken"): TruffleContracts.PathTokenContract;
+      require(name: "TimeLock"): TruffleContracts.TimeLockContract;
+      require(name: "TreasuryVester"): TruffleContracts.TreasuryVesterContract;
     }
   }
 }

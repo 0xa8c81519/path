@@ -37,6 +37,29 @@ export interface PathTokenContract extends Truffle.Contract<PathTokenInstance> {
   ): Promise<PathTokenInstance>;
 }
 
+export interface TimeLockContract extends Truffle.Contract<TimeLockInstance> {
+  "new"(
+    _beneficiary: string | BigNumber,
+    _token: string | BigNumber,
+    _startTime: number | BigNumber | string,
+    _delay: number | BigNumber | string,
+    meta?: Truffle.TransactionDetails
+  ): Promise<TimeLockInstance>;
+}
+
+export interface TreasuryVesterContract
+  extends Truffle.Contract<TreasuryVesterInstance> {
+  "new"(
+    path_: string | BigNumber,
+    recipient_: string | BigNumber,
+    vestingAmount_: number | BigNumber | string,
+    vestingBegin_: number | BigNumber | string,
+    vestingCliff_: number | BigNumber | string,
+    vestingEnd_: number | BigNumber | string,
+    meta?: Truffle.TransactionDetails
+  ): Promise<TreasuryVesterInstance>;
+}
+
 export interface ERC20Instance extends Truffle.ContractInstance {
   name(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
@@ -587,5 +610,105 @@ export interface PathTokenInstance extends Truffle.ContractInstance {
       newOwner: string | BigNumber,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
+  };
+}
+
+export interface TimeLockInstance extends Truffle.ContractInstance {
+  CYCLE_TIMES(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  PERIOD(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  beneficiary(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  cycle(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  delay(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  fixedQuantity(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  hasReward(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  name(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  startTime(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  getBalance(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  getReward(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  withdraw: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  setBeneficiary: {
+    (
+      _newBeneficiary: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      _newBeneficiary: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _newBeneficiary: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _newBeneficiary: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+}
+
+export interface TreasuryVesterInstance extends Truffle.ContractInstance {
+  lastUpdate(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  path(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  recipient(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  vestingAmount(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  vestingBegin(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  vestingCliff(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  vestingEnd(txDetails?: Truffle.TransactionDetails): Promise<BigNumber>;
+
+  setRecipient: {
+    (
+      recipient_: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse>;
+    call(
+      recipient_: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      recipient_: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      recipient_: string | BigNumber,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  claim: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 }
