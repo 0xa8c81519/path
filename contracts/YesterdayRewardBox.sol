@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./lib/TransferHelper.sol";
 
-contract YesterdayReward is Ownable, ReentrancyGuard {
+contract YesterdayRewardBox is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     struct UserInfo {
@@ -53,6 +53,7 @@ contract YesterdayReward is Ownable, ReentrancyGuard {
 
     function addUser(address _user, uint256 amt) public onlyOwner {
         require(_user != address(0), "user must not 0 address");
+        require(amt != 0, "amt can't be 0");
         require(!users[_user].exists, "dumpliated user");
         UserInfo memory _userInfo = users[_user];
         _userInfo.exists = true;
@@ -68,19 +69,35 @@ contract YesterdayReward is Ownable, ReentrancyGuard {
         return usersList.length;
     }
 
-    function claim() external nonReentrant {
-        require(users[msg.sender].exists, "user not found");
-        require(!users[msg.sender].isClaimed, "user claimed already");
+    function claim(address _user) external onlyOwner nonReentrant {
+        require(users[_user].exists, "user not found");
+        require(!users[_user].isClaimed, "user claimed already");
         uint256 _balance = token.balanceOf(address(this));
-        require(_balance >= users[msg.sender].amount, "insufficient balance");
-        users[msg.sender].isClaimed = true;
-        users[msg.sender].claimedBlock = block.number;
-        users[msg.sender].claimedTime = block.timestamp;
-        TransferHelper.safeTransfer(
-            address(token),
-            msg.sender,
-            users[msg.sender].amount
+        require(_balance >= users[_user].amount, "insufficient balance");
+        users[_user].isClaimed = true;
+        users[_user].claimedBlock = block.number;
+        users[_user].claimedTime = block.timestamp;
+        TransferHelper.safeTransfer(address(token), _user, users[_user].amount);
+        emit Claim(_user, users[_user].amount);
+    }
+
+    function getUserInfo(address _user)
+        public
+        view
+        returns (
+            uint256,
+            bool,
+            bool,
+            uint256,
+            uint256
+        )
+    {
+        return (
+            users[_user].amount,
+            users[_user].exists,
+            users[_user].isClaimed,
+            users[_user].claimedBlock,
+            users[_user].claimedTime
         );
-        emit Claim(msg.sender, users[msg.sender].amount);
     }
 }
