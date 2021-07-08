@@ -19,6 +19,10 @@ contract TreasuryVesterTwo {
 
     uint256 public lastUpdate;
 
+    uint256 public DEFAULT_AMOUNT = 200_684_451_100_618_000_000_000_000;
+
+    event InjectAssets(address sender, uint256 amount);
+
     constructor(
         address path_,
         address recipient_,
@@ -74,5 +78,18 @@ contract TreasuryVesterTwo {
             lastUpdate = block.timestamp;
         }
         TransferHelper.safeTransfer(path, recipient, amount);
+    }
+
+    /// @dev Inject assets.
+    function injectAsset() external {
+        uint256 _balance = IERC20(path).balanceOf(address(this));
+        require(_balance == 0, "balance must be 0");
+        TransferHelper.safeTransferFrom(
+            path,
+            msg.sender,
+            address(this),
+            DEFAULT_AMOUNT
+        );
+        emit InjectAssets(msg.sender, DEFAULT_AMOUNT);
     }
 }

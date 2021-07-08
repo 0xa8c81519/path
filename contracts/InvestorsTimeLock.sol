@@ -6,26 +6,31 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./lib/TransferHelper.sol";
 
-contract TimeLock {
+/// @title PATH Investors' Time Lock
+contract  InvestorsTimeLock{
     using SafeMath for uint256;
 
     IERC20 public token;
     uint256 public constant PERIOD = 30 days;
     uint256 public constant CYCLE_TIMES = 24;
-    uint256 public fixedQuantity = 6_250_000 ether; // Monthly rewards are fixed
+    uint256 public fixedQuantity = 4_166_666_666_666_666_666_666_666; // Monthly rewards are fixed
     uint256 public startTime;
     uint256 public delay;
     uint256 public cycle; // cycle already received
     uint256 public hasReward; // Rewards already withdrawn
     address public beneficiary;
     string public name = "PATH Investors Time Lock";
-    string public symbol = "PATH-ITL";
+    string public symbol = "PATH-TTL";
+    /// @dev The max amount of assets this contract will hold.
+    uint256 public DEFAULT_AMOUNT = 100_000_000 ether;
 
     event WithDraw(
         address indexed operator,
         address indexed to,
         uint256 amount
     );
+    event SetBeneficiary(address from, address to);
+    event InjectAssets(address sender, uint256 amount);
 
     constructor(
         address _beneficiary,
@@ -69,9 +74,23 @@ contract TimeLock {
         emit WithDraw(msg.sender, beneficiary, reward);
     }
 
-    // Update beneficiary address by the previous beneficiary.
+    /// @dev Update beneficiary address by the previous beneficiary.
     function setBeneficiary(address _newBeneficiary) public {
         require(msg.sender == beneficiary, "Not beneficiary");
         beneficiary = _newBeneficiary;
+        emit SetBeneficiary(msg.sender, _newBeneficiary);
+    }
+
+    /// @dev Inject assets.
+    function injectAsset() external {
+        uint256 _balance = token.balanceOf(address(this));
+        require(_balance == 0, "InvestorsTimeLock: balance must be 0");
+        TransferHelper.safeTransferFrom(
+            address(token),
+            msg.sender,
+            address(this),
+            DEFAULT_AMOUNT
+        );
+        emit InjectAssets(msg.sender, DEFAULT_AMOUNT);
     }
 }
